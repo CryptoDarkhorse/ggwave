@@ -3,6 +3,9 @@ project(ggwave VERSION 0.3.1)
 
 set(GGWAVE_VERSION_PYTHON 0.3.1)
 
+set(SDL2_DIR "e:/temp/SDL2/cmake")
+set(DLFCN_DIR_INCLUDE "e:/temp/dlfcn-win32/include")
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS "on")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")

@@ -8,6 +8,8 @@
 #include <vector>
 #include <set>
 #include <cstdint>
+#include <cstdlib>
+#include <algorithm>
 
 float frand() { return float(rand()%RAND_MAX)/RAND_MAX; }
 

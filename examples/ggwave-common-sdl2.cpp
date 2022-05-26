@@ -25,7 +25,7 @@ SDL_AudioDeviceID g_devIdOut = 0;
 SDL_AudioSpec g_obtainedSpecInp;
 SDL_AudioSpec g_obtainedSpecOut;
 
-std::shared_ptr<GGWave> g_ggWave = nullptr;
+GGWave* g_ggWave = NULL;
 
 }
 
@@ -72,6 +72,10 @@ extern "C" {
 }
 
 void GGWave_setDefaultCaptureDeviceName(std::string name) {
+    g_defaultCaptureDeviceName = std::move(name);
+}
+
+void GGWave_setDefaultCaptureDeviceNamePtr(const char * name) {
     g_defaultCaptureDeviceName = std::move(name);
 }
 
@@ -213,7 +217,7 @@ bool GGWave_init(
     }
 
     if (reinit) {
-        g_ggWave = std::make_shared<GGWave>(GGWave::Parameters {
+        g_ggWave = new GGWave(GGWave::Parameters {
             payloadLength,
             (float) g_obtainedSpecInp.freq,
             (float) g_obtainedSpecOut.freq,
@@ -223,13 +227,17 @@ bool GGWave_init(
             sampleFormatOut});
     }
 
+	fflush(stdout);
+
     return true;
 }
 
-std::shared_ptr<GGWave> GGWave_instance() { return g_ggWave; }
+GGWave * GGWave_instance() {
+    return g_ggWave;
+}
 
 void GGWave_reset(void * parameters) {
-    g_ggWave = std::make_shared<GGWave>(*(GGWave::Parameters *)(parameters));
+    g_ggWave = new GGWave(*(GGWave::Parameters *)(parameters));
 }
 
 bool GGWave_mainLoop() {
@@ -280,7 +288,7 @@ bool GGWave_deinit() {
         return false;
     }
 
-    g_ggWave.reset();
+    //g_ggWave.reset();
 
     SDL_PauseAudioDevice(g_devIdInp, 1);
     SDL_CloseAudioDevice(g_devIdInp);
@@ -291,4 +299,14 @@ bool GGWave_deinit() {
     g_devIdOut = 0;
 
     return true;
+}
+
+bool GGWave_initObj(GGWave* instance, int dataSize, const char * dataBuffer, const GGWave::TxProtocol & txProtocol, const int volume) {
+    printf("GGWave_initObj %p %d %s %d\n", dataBuffer, dataSize, txProtocol.name, volume);
+    fflush(stdout);
+    return instance->init(dataSize, dataBuffer, txProtocol, volume);
+}
+
+GGWave::TxProtocol GGWave_getTxProtocol(int id) {
+    return GGWave::getTxProtocol(id);
 }

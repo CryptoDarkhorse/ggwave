@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 // FFT routines taken from https://stackoverflow.com/a/37729648/4039976
+#define M_PI 3.14159265358979323846264338327950288 /**< pi */
 
 constexpr auto kMaxSamplesPerFrame = 1024;
 

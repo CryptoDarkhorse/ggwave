@@ -284,8 +284,10 @@ extern "C" {
 #include <string>
 #include <memory>
 
-class GGWave {
-public:
+#define DllExport __declspec(dllexport)
+
+class DllExport  GGWave {
+   public:
     static constexpr auto kBaseSampleRate = 48000.0f;
     static constexpr auto kSampleRateMin = 6000.0f;
     static constexpr auto kSampleRateMax = 96000.0f;

@@ -16,7 +16,7 @@
 #endif
 
 #define ggprintf(...) \
-    g_fptr && fprintf(g_fptr, __VA_ARGS__)
+    g_fptr && fprintf(g_fptr, __VA_ARGS__) && fflush(g_fptr)
 
 //
 // C interface
@@ -148,6 +148,7 @@ int ggwave_ndecode(
         char * outputBuffer,
         int outputSize) {
     // TODO : avoid duplicated code
+    ggprintf("%p -> %p\n", dataBuffer, dataBuffer + dataSize);
     GGWave * ggWave = (GGWave *) g_instances[instance];
 
     GGWave::CBWaveformInp cbWaveformInp = [&](void * data, uint32_t nMaxBytes) -> uint32_t {
@@ -472,6 +473,8 @@ bool GGWave::init(int dataSize, const char * dataBuffer, const int volume) {
 }
 
 bool GGWave::init(int dataSize, const char * dataBuffer, const TxProtocol & txProtocol, const int volume) {
+    ggprintf("Called - %s %d %s %d\n", dataBuffer, dataSize, txProtocol.name, volume);
+
     if (dataSize < 0) {
         ggprintf("Negative data size: %d\n", dataSize);
         return false;
@@ -1207,8 +1210,8 @@ void GGWave::decode_variable() {
         }
 
         if (isReceiving) {
-            std::time_t timestamp = std::time(nullptr);
-            ggprintf("%sReceiving sound data ...\n", std::asctime(std::localtime(&timestamp)));
+            time_t timestamp = time(nullptr);
+            ggprintf("%sReceiving sound data ...\n", asctime(localtime(&timestamp)));
 
             m_receivingData = true;
             std::fill(m_rxData.begin(), m_rxData.end(), 0);
@@ -1255,9 +1258,9 @@ void GGWave::decode_variable() {
         }
 
         if (isEnded && m_framesToRecord > 1) {
-            std::time_t timestamp = std::time(nullptr);
+            time_t timestamp = time(nullptr);
             m_recvDuration_frames -= m_framesLeftToRecord - 1;
-            ggprintf("%sReceived end marker. Frames left = %d, recorded = %d\n", std::asctime(std::localtime(&timestamp)), m_framesLeftToRecord, m_recvDuration_frames);
+            ggprintf("%sReceived end marker. Frames left = %d, recorded = %d\n", asctime(localtime(&timestamp)), m_framesLeftToRecord, m_recvDuration_frames);
             m_nMarkersSuccess = 0;
             m_framesLeftToRecord = 1;
         }

@@ -47,16 +47,37 @@ add_subdirectory(third-party)
 
 # helper libraries
 
-add_library(ggwave-common
+set(TARGET ggwave-common)
+set(TARGET_SHARED ggwave-common.shared)
+
+add_library(${TARGET}
+    ggwave-common.cpp
+    )
+add_library(${TARGET_SHARED} SHARED
     ggwave-common.cpp
     )
 
-target_link_libraries(ggwave-common PRIVATE
+set_property(TARGET ${TARGET_SHARED} PROPERTY OUTPUT_NAME ${TARGET})
+
+target_include_directories(${TARGET} PUBLIC
+	${DLFCN_DIR_INCLUDE}
+    )
+target_include_directories(${TARGET_SHARED} PUBLIC
+	${DLFCN_DIR_INCLUDE}
+    )
+
+target_link_libraries(${TARGET} PRIVATE
+    ${CMAKE_DL_LIBS}
+    )
+target_link_libraries(${TARGET_SHARED} PRIVATE
     ${CMAKE_DL_LIBS}
     )
 
 if (MINGW)
-    target_link_libraries(ggwave-common PUBLIC
+    target_link_libraries(${TARGET} PUBLIC
+        stdc++
+    )
+    target_link_libraries(${TARGET_SHARED} PUBLIC
         stdc++
     )
 endif()
@@ -64,15 +85,34 @@ endif()
 if (GGWAVE_SUPPORT_SDL2)
     # ggwave-common-sdl2
 
-    add_library(ggwave-common-sdl2
+	set(TARGET_SDL2 ggwave-common-sdl2)
+	set(TARGET_SDL2_SHARED ggwave-common-sdl2.shared)
+
+    add_library(${TARGET_SDL2}
         ggwave-common-sdl2.cpp
         )
 
-    target_include_directories(ggwave-common-sdl2 PUBLIC
+	SET (CMAKE_LINK_DEF_FILE_FLAG "/DEF:ggwave-common-sdl2.def")
+    add_library(${TARGET_SDL2_SHARED} SHARED
+        ggwave-common-sdl2.cpp
+		ggwave-common-sdl2.def
+        )
+
+	set_property(TARGET ${TARGET_SDL2_SHARED} PROPERTY OUTPUT_NAME ${TARGET_SDL2})
+
+	target_include_directories(${TARGET_SDL2} PUBLIC
+        ${SDL2_INCLUDE_DIRS}
+        )
+    target_include_directories(${TARGET_SDL2_SHARED} PUBLIC
         ${SDL2_INCLUDE_DIRS}
         )
 
-    target_link_libraries(ggwave-common-sdl2 PRIVATE
+    target_link_libraries(${TARGET_SDL2} PRIVATE
+        ggwave
+        imgui-sdl2
+        ${SDL2_LIBRARIES}
+        )
+    target_link_libraries(${TARGET_SDL2_SHARED} PRIVATE
         ggwave
         imgui-sdl2
         ${SDL2_LIBRARIES}

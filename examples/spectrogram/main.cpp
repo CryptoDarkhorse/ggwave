@@ -2,6 +2,7 @@
 
 #include "ggwave/ggwave.h"
 #include "ggwave-common.h"
+#include <algorithm>
 
 #ifdef __EMSCRIPTEN__
 #include "build_timestamp.h"

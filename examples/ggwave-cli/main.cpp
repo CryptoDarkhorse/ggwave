@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
 
     auto argm = parseCmdArguments(argc, argv);
     int captureId = argm["c"].empty() ? 0 : std::stoi(argm["c"]);
-    int playbackId = argm["p"].empty() ? 0 : std::stoi(argm["p"]);
+    int playbackId = argm["p"].empty() ? 1 : std::stoi(argm["p"]);
     int txProtocolId = argm["t"].empty() ? 1 : std::stoi(argm["t"]);
     int payloadLength = argm["l"].empty() ? -1 : std::stoi(argm["l"]);
     bool printTones = argm.find("v") == argm.end() ? false : true;
@@ -50,6 +50,7 @@ int main(int argc, char** argv) {
 
     std::mutex mutex;
     std::thread inputThread([&]() {
+        
         std::string inputOld = "";
         while (true) {
             std::string input;

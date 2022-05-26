@@ -226,7 +226,7 @@ int main(int argc, char** argv) {
     SDL_GL_MakeCurrent(window, gl_context);
     SDL_GL_SetSwapInterval(1); // Enable vsync
 
-    ImGui_Init(window, gl_context);
+	ImGui_Init(window, gl_context);
     ImGui::GetIO().IniFilename = nullptr;
 
     {

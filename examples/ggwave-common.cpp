@@ -1,7 +1,7 @@
 #include "ggwave-common.h"
 
 #include <dlfcn.h>
-#include <unistd.h>
+//#include <unistd.h>
 
 #include <cstring>
 #include <fstream>

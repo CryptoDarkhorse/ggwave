@@ -28,7 +28,7 @@ int main() {
     char decoded[16];
 
     int n = ggwave_encode(instance, payload, 4, GGWAVE_TX_PROTOCOL_AUDIBLE_FASTEST, 50, NULL, 1);
-    char waveform[n];
+    char *waveform = (char*)malloc(n);
 
     int ne = ggwave_encode(instance, payload, 4, GGWAVE_TX_PROTOCOL_AUDIBLE_FASTEST, 50, waveform, 0);
     CHECK(ne > 0);
@@ -38,8 +38,15 @@ int main() {
     CHECK(ret == -2); // fail
 
     // just enough size to store it
-    ret = ggwave_ndecode(instance, waveform, sizeof(signed short)*ne, decoded, 4);
-    CHECK(ret == 4); // success
+    printf("----------------------\n");
+    for (int i = 0; i < 4; i++) {
+        ret = ggwave_ndecode(instance, waveform + ne * 2 / 4 * i, ne * 2 / 4, decoded, 4);
+        if (ret > 0) {
+            CHECK(ret == 4);  // success
+		}
+    }
+    printf("----------------------\n");
+    
 
     // unsafe method - will write the decoded output to the output buffer regardless of the size
     ret = ggwave_decode(instance, waveform, sizeof(signed short)*ne, decoded);
@@ -58,6 +65,7 @@ int main() {
     decoded[ret] = 0; // null-terminate the received data
     CHECK(strcmp(decoded, payload) == 0);
 
+	free(waveform);
     ggwave_free(instance);
 
     return 0;
