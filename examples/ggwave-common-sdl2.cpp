@@ -307,6 +307,41 @@ bool GGWave_initObj(GGWave* instance, int dataSize, const char * dataBuffer, con
     return instance->init(dataSize, dataBuffer, txProtocol, volume);
 }
 
+int GGWave_getDecodedData(GGWave * instance, char * outputBuffer, int outputSize) {
+    GGWave::TxRxData rxData;
+
+    auto rxDataLength = instance->takeRxData(rxData);
+    if (rxDataLength == -1) {
+        // failed to decode message
+        return -1;
+    } else if (rxDataLength > outputSize) {
+        // the outputBuffer is not big enough to store the data
+        return -2;
+    } else if (rxDataLength > 0) {
+        memcpy(outputBuffer, rxData.data(), rxDataLength);
+    }
+    return rxDataLength;
+}
+
+int GGWave_getTxProtocolCount() {
+    return GGWave::getTxProtocols().size();
+}
+
 GGWave::TxProtocol GGWave_getTxProtocol(int id) {
     return GGWave::getTxProtocol(id);
+}
+
+int GGWave_getStatus(GGWave * instance) {
+    bool isReceiving = instance->isReceiving();
+    bool isAnalyzing = instance->isAnalyzing();
+    bool isSending = (instance->hasTxData() || SDL_GetQueuedAudioSize(g_devIdOut) > 0);
+
+	if (isSending)
+        return 1;
+	if (isReceiving)
+        return 2;
+    else if (isAnalyzing)
+        return 3;
+    else
+        return 0;
 }

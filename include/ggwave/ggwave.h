@@ -253,6 +253,11 @@ extern "C" {
             char * outputBuffer,
             int outputSize);
 
+    //
+    //   Take decoded data
+    //
+    GGWAVE_API int ggwave_getDecodedData(ggwave_Instance instance, char * outputBuffer, int outputSize);
+
     // Toggle Rx protocols on and off
     //
     //   instance       - the GGWave instance to use

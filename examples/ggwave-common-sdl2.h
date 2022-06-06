@@ -20,5 +20,16 @@ void GGWave_reset(void * parameters);
 bool GGWave_mainLoop();
 bool GGWave_deinit();
 
+// wrap of class
 bool GGWave_initObj(GGWave * instance, int dataSize, const char * dataBuffer, const GGWave::TxProtocol & txProtocol, const int volume);
+int GGWave_getDecodedData(GGWave * instance, char * outputBuffer, int outputSize);
+int GGWave_getTxProtocolCount();
 GGWave::TxProtocol GGWave_getTxProtocol(int id);
+/**
+ * get status of GGWave instance
+ *     0: listening
+ *	   1: sending
+ *     2: receiving
+ *     3: analyzing
+ */
+int GGWave_getStatus(GGWave * instance);

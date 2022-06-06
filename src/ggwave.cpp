@@ -148,7 +148,6 @@ int ggwave_ndecode(
         char * outputBuffer,
         int outputSize) {
     // TODO : avoid duplicated code
-    ggprintf("%p -> %p\n", dataBuffer, dataBuffer + dataSize);
     GGWave * ggWave = (GGWave *) g_instances[instance];
 
     GGWave::CBWaveformInp cbWaveformInp = [&](void * data, uint32_t nMaxBytes) -> uint32_t {
@@ -177,6 +176,24 @@ int ggwave_ndecode(
         memcpy(outputBuffer, rxData.data(), rxDataLength);
     }
 
+    return rxDataLength;
+}
+
+extern "C" 
+int ggwave_getDecodedData(ggwave_Instance instance, char * outputBuffer, int outputSize) {
+    GGWave * ggWave = (GGWave *) g_instances[instance];
+    GGWave::TxRxData rxData;
+
+    auto rxDataLength = ggWave->takeRxData(rxData);
+    if (rxDataLength == -1) {
+        // failed to decode message
+        return -1;
+    } else if (rxDataLength > outputSize) {
+        // the outputBuffer is not big enough to store the data
+        return -2;
+    } else if (rxDataLength > 0) {
+        memcpy(outputBuffer, rxData.data(), rxDataLength);
+    }
     return rxDataLength;
 }
 
@@ -473,8 +490,6 @@ bool GGWave::init(int dataSize, const char * dataBuffer, const int volume) {
 }
 
 bool GGWave::init(int dataSize, const char * dataBuffer, const TxProtocol & txProtocol, const int volume) {
-    ggprintf("Called - %s %d %s %d\n", dataBuffer, dataSize, txProtocol.name, volume);
-
     if (dataSize < 0) {
         ggprintf("Negative data size: %d\n", dataSize);
         return false;
